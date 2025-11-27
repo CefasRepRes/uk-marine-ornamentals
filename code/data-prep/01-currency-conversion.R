@@ -97,7 +97,6 @@ str(import_data)
 # Write
 data.table::fwrite(import_data, here::here("data",
                                            "modified-data",
-                                           "invoice-data",
                                            "01-import-data-currency.csv"),
                    row.names = FALSE,
                    na = NA)

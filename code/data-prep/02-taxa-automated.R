@@ -7,7 +7,6 @@ library(readr) # Better file reading
 library(data.table) # Better data wrangling
 library(dplyr) # Use if you have to
 library(tidyr) # Column separation
-library(progress) # Progress bar
 library(beepr) # Beep when complete
 # Taxnonomic packages
 library(worrms)
@@ -64,9 +63,6 @@ if(file.exists(taxa_fp)){
   # Get those found
   found_taxonomy <- found_taxonomy[!is.na(class)] %>% unique()
   
-  # Create progress bar
-  pb <- progress_bar$new(total = nrow(found_taxonomy))
-  
   # Join to data
   for(i in 1:nrow(found_taxonomy)){
     import_data[Binomial == found_taxonomy$Binomial[i] |
@@ -74,7 +70,6 @@ if(file.exists(taxa_fp)){
                 `:=` (class = found_taxonomy$class[i],
                       order = found_taxonomy$order[i],
                       family = found_taxonomy$family[i])]
-    pb$tick()
   }
   # If not, add columns
 } else {
@@ -93,23 +88,22 @@ binomial <- species$Binomial %>%
   unique() %>% 
   na.omit()
 
-# Create progress bar
-pb <- progress_bar$new(total = length(binomial))
-
 # Loop over species list checking for synonyms using Worms
 synonyms_worm <- data.frame()
-for(i in 1:length(binomial)){
+for(i in 3000:length(binomial)){
   # Fetch the synonyms from the WoRMS database
   syn <- try(worrms::wm_records_taxamatch(binomial[i],
                                           marine_only = FALSE))
   syn <- syn[[1]]
   # Only save if it returns results
   if("data.frame" %in% class(syn)){
-    syn$submitted_name <- binomial[i]
-    synonyms_worm <- rbind(synonyms_worm, syn)
+    if(any(!(syn$status %in% "deleted"))){
+      syn$submitted_name <- binomial[i]
+      synonyms_worm <- rbind(synonyms_worm, syn)
+    }
   }
   syn <- NULL # reset
-  pb$tick()
+  print(i)
 };beep() # beep when complete
 
 # Convert to data.table
@@ -342,8 +336,6 @@ import_data_taxa$class <- as.character(import_data_taxa$class)
 import_data_taxa$order <- as.character(import_data_taxa$order)
 import_data_taxa$family <- as.character(import_data_taxa$family)
 
-# Create progress bar
-pb <- progress_bar$new(total = nrow(species_worms))
 # Loop to join
 for(i in 1:nrow(species_worms)){
   # Join
@@ -354,7 +346,6 @@ for(i in 1:nrow(species_worms)){
                          Binomial = species_worms$valid_name[i],
                          submitted_name = species_worms$binomial[i],
                          rank = species_worms$rank[i])]
-  pb$tick()
 }
 
 # Update genus and species
@@ -377,16 +368,13 @@ species_missing_taxa <- unique(species_missing_taxa)
 # Remove NA
 species_missing_taxa <- species_missing_taxa[submitted_name != "NA"]
 
-# Create progress bar
-pb <- progress_bar$new(total = nrow(species_missing_taxa))
-
 # Get missing taxa from GBIF
 taxonomy_gbif <- data.frame()
 for(i in 1:nrow(species_missing_taxa)){
   t <- try(rgbif::name_backbone(name = species_missing_taxa$submitted_name[i],
                                 strict = FALSE))
   taxonomy_gbif <- dplyr::bind_rows(taxonomy_gbif, t)
-  pb$tick()
+  print(i)
 }
 
 # Select only taxonomy
@@ -414,9 +402,6 @@ taxonomy_gbif_corr <- taxonomy_gbif_corr[!(is.na(phylum))]
 
 ## Join back to import data ====================================================
 
-# Create progress bar
-pb <- progress_bar$new(total = nrow(import_data_taxa))
-
 # Loop to join
 for(i in 1:nrow(import_data_taxa)){
   # Join
@@ -426,7 +411,7 @@ for(i in 1:nrow(import_data_taxa)){
                          family = taxonomy_gbif_corr$family[i],
                          Binomial = taxonomy_gbif_corr$canonicalName[i],
                          submitted_name = taxonomy_gbif_corr$verbatim_name[i])]
-  pb$tick()
+  print(i)
 }
 
 # Correct genus and species
@@ -434,7 +419,7 @@ import_data_taxa <- separate(import_data_taxa,
                              col = Binomial,
                              into = c("Genus", "Species"),
                              sep = " ",
-                             remove = F)
+                             remove = FALSE)
 
 # Convert back to data.table
 import_data_taxa <- data.table(import_data_taxa)
@@ -447,9 +432,6 @@ species_missing_taxa <- import_data_taxa[is.na(import_data_taxa$class)][
   , c("submitted_name", "Common_Name", "Genus", "Species")]
 species_missing_taxa <- unique(species_missing_taxa)
 
-# Create progress bar
-pb <- progress_bar$new(total = nrow(species_missing_taxa))
-
 # Get missing taxa - NCBI - using taxize package
 # Don't use ITIS - it's super slow and inaccurate
 # You will have to babysit this
@@ -460,7 +442,7 @@ for(i in 1:nrow(species_missing_taxa)){
                             get = c("species", "family", "order", "class"),
                             db = "ncbi"))
   taxonomy_ncbi <- rbind(taxonomy_ncbi, t)
-  pb$tick()
+  print(i)
 }
 
 # Tidy the NCBI outputs
@@ -475,9 +457,6 @@ taxonomy_ncbi_tidy <- taxonomy_ncbi_tidy[class != "Agaricomycetes"]
 
 ## Join back to import data ====================================================
 
-# Create progress bar
-pb <- progress_bar$new(total = nrow(import_data_taxa))
-
 # Loop to join
 for(i in 1:nrow(import_data_taxa)){
   # Join
@@ -487,7 +466,7 @@ for(i in 1:nrow(import_data_taxa)){
                          family = taxonomy_ncbi_tidy$family[i],
                          Binomial = taxonomy_ncbi_tidy$species[i],
                          submitted_name = taxonomy_ncbi_tidy$query[i])]
-  pb$tick()
+  print(i)
 }
 
 # Correct genus and species
@@ -517,6 +496,8 @@ import_data_taxa[class %in% c("Agaricomycetes", "Bacillariophyceae"),
                        Binomial = NA)]
 
 # Check for duplicates ---------------------------------------------------------
+
+# Use Eschmeyer's Catalogue of Fishes and WoRMS
 
 species <- import_data_taxa[, c("Binomial", "Genus", "family", "order", "class")] %>%
   unique() %>% na.omit()
@@ -594,6 +575,33 @@ import_data_taxa <- import_data_taxa[order == "Actiniaria", class := "Hexacorall
 # Correct class for Zoantharia
 import_data_taxa <- import_data_taxa[order == "Zoantharia", class := "Hexacorallia"]
 
+# Correct family for Anthias/Pseudanthias
+import_data_taxa <- import_data_taxa[Genus %in% c("Pseudanthias",
+                                                  "Anthias"), family := "Anthiadidae"]
+
+# Correct family for Cephalopholis miniata
+import_data_taxa <- import_data_taxa[Binomial == "Cephalopholis miniata", family := "Epinephelidae"]
+
+# Correct family for Nemanthias carberryi
+import_data_taxa <- import_data_taxa[Binomial == "Nemanthias carberryi", family := "Anthiadidae"]
+
+# Correct family for Nematobrycon palmeri
+import_data_taxa <- import_data_taxa[Binomial == "Nematobrycon palmeri", family := "Acestrorhamphidae"]
+
+# Correct family for Platax orbicularis
+import_data_taxa <- import_data_taxa[Binomial == "Platax orbicularis", family := "Ephippidae"]
+
+# Correct order for Platax orbicularis
+import_data_taxa <- import_data_taxa[Binomial == "Platax orbicularis", order := "Acanthuriformes"]
+
+# check for dupes again
+species <- import_data_taxa[, c("Binomial", "Genus", "family", "order", "class")] %>%
+  unique() %>% na.omit()
+
+# Get duplicates
+species_dupes <- rbind(dplyr::filter(species, duplicated(Binomial)),
+                       dplyr::filter(species, duplicated(Binomial, fromLast = T)))
+
 # Save outputs -----------------------------------------------------------------
 
 # Missing taxa
@@ -607,13 +615,11 @@ taxa_missing <- import_data_taxa[is.na(class)][, c("submitted_name",
 
 data.table::fwrite(taxa_missing, here::here("data",
                                             "modified-data",
-                                            "invoice-data",
                                             "missing-taxa.csv"), row.names = F)
 
 # Save complete dataset
 data.table::fwrite(import_data_taxa, here::here("data",
                                                 "modified-data",
-                                                "invoice-data",
                                                 "02-import-data-taxa-automated.csv"), 
-                   row.names = F,
+                   row.names = FALSE,
                    na = NA)

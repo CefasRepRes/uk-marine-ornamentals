@@ -16,7 +16,6 @@ library(taxize)
 # Load missing taxa
 missing_taxa <- read.csv(here::here("data",
                                     "modified-data",
-                                    "invoice-data",
                                     "missing-taxa.csv"))
 colnames(missing_taxa)[1:2] <- c("input_names", "input_names_common")
 missing_taxa$input_names[missing_taxa$input_names == ""] <- NA
@@ -25,33 +24,17 @@ missing_taxa <- data.table(missing_taxa)
 # Load manually found taxa
 found_taxa <- read.csv(here::here("data",
                                   "modified-data",
-                                  "invoice-data",
                                   "missing-taxa-identified.csv"))
 
 str(found_taxa)
 colnames(found_taxa)[1] <- "input_names"
 found_taxa <- data.table(found_taxa)
 
-# Join together ----------------------------------------------------------------
-
-missing_taxa_binom <- data.table::merge.data.table(missing_taxa,
-                                                   found_taxa[!is.na(input_names)],
-                                                   by = "input_names",
-                                                   all.x = TRUE)
-
 # Find those still without identification --------------------------------------
 
-found_taxa_all <- data.table(missing_taxa_binom) %>% unique()
-found_taxa_correct <- found_taxa_all[!is.na(class)]
-
 # Get those still missing
-missing_taxa <- data.table(missing_taxa)
-missing_taxa_unfound <- missing_taxa[!(input_names %in% found_taxa_correct$input_binomial) |
-                                       !(input_names_common %in% found_taxa_correct$common_name)]
-missing_taxa_unfound$binomial <- NA
-missing_taxa_unfound$family <- NA
-missing_taxa_unfound$order <- NA
-missing_taxa_unfound$class <- NA
+missing_taxa_unfound <- missing_taxa[!(input_names %in% found_taxa$input_names) |
+                                       !(input_names_common %in% found_taxa$Common_Name)]
 
 # Append to found taxa
 found_missing_taxa <- rbind(found_taxa,
@@ -61,7 +44,6 @@ found_missing_taxa <- rbind(found_taxa,
 # Write into file
 write.csv(found_missing_taxa, here::here("data",
                                          "modified-data",
-                                         "invoice-data",
                                          "missing-taxa-identified.csv"),
           row.names = F)
 
@@ -75,7 +57,6 @@ warning("Identify taxa before proceeding further")
 # Read identified taxa back in
 found_taxa <- read.csv(here::here("data",
                                   "modified-data",
-                                  "invoice-data",
                                   "missing-taxa-identified.csv"))
 
 # Get genus and species from binomial
@@ -93,7 +74,6 @@ found_taxa <- unique(found_taxa)
 # Load main data set
 import_data <- read_csv(here::here("data",
                                    "modified-data",
-                                   "invoice-data",
                                    "02-import-data-taxa-automated.csv"),
                         # Ensure column types are read in correctly
                         col_types = cols(Import_Date = col_date(format = "%Y-%m-%d"),
@@ -102,21 +82,18 @@ import_data <- read_csv(here::here("data",
                                          Value_USD = col_double()),
                         na = c("", " ", NA, "N/A", "#NA", "#REF!", "#N/A")) %>% data.table()
 # Check data structure
-glimpse(import_data)
-
-# Create progress bar
-pb <- progress_bar$new(total = nrow(import_data))
+str(import_data)
 
 # Loop to join
 for(i in 1:nrow(import_data)){
   # Join
-  import_data[submitted_name == found_taxa$submitted_name[i],
+  import_data[submitted_name == found_taxa$input_names[i],
               `:=` (class = found_taxa$class[i],
                     order = found_taxa$order[i],
                     family = found_taxa$family[i],
                     Binomial = found_taxa$Binomial[i],
-                    submitted_name = found_taxa$submitted_name[i])]
-  pb$tick()
+                    submitted_name = found_taxa$input_names[i])]
+  print(i)
 }
 
 # Correct class ----------------------------------------------------------------
@@ -125,6 +102,9 @@ import_data_taxa <- data.table(import_data)
 
 # Check classes
 unique(import_data_taxa$class)
+
+# Correct "NA" to NA
+import_data_taxa[class == "NA", class := NA]
 
 # Actinopterygii
 import_data_taxa[, class := replace(class, class %in% c("Actinopteri", "Actinopterygii"), "Teleostei")]
@@ -158,7 +138,7 @@ unique(import_data_taxa$class)
 
 # Add group --------------------------------------------------------------------
 
-import_data_taxa$group <- NA
+import_data_taxa[, group := as.character(NA)]
 for(i in 1:nrow(import_data_taxa)){
   print(i)
   if(import_data_taxa$class[i] %chin% c("Teleostei", "Cladistia")){
@@ -175,15 +155,23 @@ for(i in 1:nrow(import_data_taxa)){
   }
 };beep()
 
+# Bony fishes
+import_data_taxa[class %in% c("Teleostei", "Cladistia"), group := "Bony fishes"]
+
+# Other vertebrates
+import_data_taxa[class %in% c("Elasmobranchii", "Amphibia"), group := "Other vertebrates"]
+
+# Stony corals
+import_data_taxa[order == "Scleractinia", group := "Stony corals"]
+
+# Stony corals
+import_data_taxa[is.na(group) & !is.na(class), group := "Other invertebrates"]
+
 # Save -------------------------------------------------------------------------
 
 # Write into file
 data.table::fwrite(import_data_taxa, here::here("data",
                                                 "modified-data",
-                                                "invoice-data",
                                                 "03-import-data-taxa-manual.csv"),
                    row.names = F,
                    na = NA)
-
-# Count those still missing
-missing <- import_data_taxa[is.na(class)][, .(Binomial, Common_Name)] %>% unique()
