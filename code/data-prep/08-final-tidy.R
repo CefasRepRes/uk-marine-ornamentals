@@ -116,10 +116,12 @@ import_data_tidy[Sex == "NA"]$Sex <- NA
 # Save
 data.table::fwrite(import_data_tidy, here::here("data",
                                                 "modified-data",
-                                                "import-data-final.csv"))
+                                                "import-data-final.csv"),
+                   na = "NA")
 
 # CITES only
 cites_records <- import_data_tidy[CITES_listing == "II"]
 data.table::fwrite(import_data_tidy, here::here("data",
                                                 "modified-data",
-                                                "07a-import-data-cites.csv"))
+                                                "07a-import-data-cites.csv"),
+                   na = "NA")
