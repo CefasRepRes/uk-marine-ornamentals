@@ -17,7 +17,6 @@ library(taxize)
 
 import_data <- read_csv(here::here("data",
                                    "modified-data",
-                                   "invoice-data",
                                    "01-import-data-currency.csv"),
                         # Ensure column types are read in correctly
                         col_types = cols(Import_Date = col_date(format = "%Y-%m-%d"),
@@ -90,7 +89,7 @@ binomial <- species$Binomial %>%
 
 # Loop over species list checking for synonyms using Worms
 synonyms_worm <- data.frame()
-for(i in 3000:length(binomial)){
+for(i in 1:length(binomial)){
   # Fetch the synonyms from the WoRMS database
   syn <- try(worrms::wm_records_taxamatch(binomial[i],
                                           marine_only = FALSE))
@@ -346,6 +345,7 @@ for(i in 1:nrow(species_worms)){
                          Binomial = species_worms$valid_name[i],
                          submitted_name = species_worms$binomial[i],
                          rank = species_worms$rank[i])]
+  print(i)
 }
 
 # Update genus and species
@@ -375,7 +375,7 @@ for(i in 1:nrow(species_missing_taxa)){
                                 strict = FALSE))
   taxonomy_gbif <- dplyr::bind_rows(taxonomy_gbif, t)
   print(i)
-}
+};beep()
 
 # Select only taxonomy
 taxonomy_gbif <- data.table(taxonomy_gbif)
@@ -412,7 +412,7 @@ for(i in 1:nrow(import_data_taxa)){
                          Binomial = taxonomy_gbif_corr$canonicalName[i],
                          submitted_name = taxonomy_gbif_corr$verbatim_name[i])]
   print(i)
-}
+};beep()
 
 # Correct genus and species
 import_data_taxa <- separate(import_data_taxa,
@@ -443,7 +443,7 @@ for(i in 1:nrow(species_missing_taxa)){
                             db = "ncbi"))
   taxonomy_ncbi <- rbind(taxonomy_ncbi, t)
   print(i)
-}
+};beep()
 
 # Tidy the NCBI outputs
 taxonomy_ncbi <- data.table(taxonomy_ncbi)
@@ -484,7 +484,7 @@ import_data_taxa <- data.table(import_data_taxa)
 unique(import_data_taxa$class)
 
 # Change Teleostei etc. to Actinopterygii
-import_data_taxa[class %in% c("Teleostei", "Actinopteri"), class := "Actinopterygii"]
+import_data_taxa[class %in% c("Actinopterygii", "Actinopteri"), class := "Teleostei"]
 
 # Remove incorrect taxa
 import_data_taxa[class %in% c("Agaricomycetes", "Bacillariophyceae"),
@@ -497,12 +497,13 @@ import_data_taxa[class %in% c("Agaricomycetes", "Bacillariophyceae"),
 
 # Check for duplicates ---------------------------------------------------------
 
-# Use Eschmeyer's Catalogue of Fishes and WoRMS
+# Use  WoRMS
 
 species <- import_data_taxa[, c("Binomial", "Genus", "family", "order", "class")] %>%
   unique() %>% na.omit()
 
 # Get duplicates
+# Correct using WoRMS accepted version
 species_dupes <- rbind(dplyr::filter(species, duplicated(Binomial)),
                        dplyr::filter(species, duplicated(Binomial, fromLast = T)))
 
@@ -516,7 +517,7 @@ import_data_taxa <- import_data_taxa[family == "Labridae", order := "Eupercaria 
 import_data_taxa <- import_data_taxa[family == "Blenniidae", order := "Blenniiformes"]
 
 # Correct family for Botia
-import_data_taxa <- import_data_taxa[Genus == "Botia", family := "Cobitidae"]
+import_data_taxa <- import_data_taxa[Genus == "Botia", family := "Botiidae"]
 
 # Correct order for Pomacanthidae
 import_data_taxa <- import_data_taxa[family == "Pomacanthidae", order := "Acanthuriformes"]

@@ -112,8 +112,8 @@ import_data_taxa[, class := replace(class, class %in% c("Actinopteri", "Actinopt
 # Cladistia
 import_data_taxa[, class := replace(class, class == "Cladistii", "Cladistia")]
 
-# Chondrichthyes
-import_data_taxa[, class := replace(class, class == "Elasmobranchii", "Chondrichthyes")]
+# Elasmobranchii
+import_data_taxa[, class := replace(class, class == "Chondrichthyes", "Elasmobranchii")]
 
 # Insecta (correct whole taxon)
 import_data_taxa[class == "Insecta",
@@ -136,36 +136,92 @@ import_data_taxa[class == "Bacillariophyceae",
 # Check classes
 unique(import_data_taxa$class)
 
-# Add group --------------------------------------------------------------------
+# Check species list -----------------------------------------------------------
 
-import_data_taxa[, group := as.character(NA)]
+# Correct erroneous taxa
+corr_taxa <- read.csv(here::here("data", "modified-data", "corrected-taxa.csv"))
+
+## By species ==================================================================
+
+# Do quick check of taxa
+spp_check <- import_data_taxa[, .(Binomial, family, order, class)] %>% unique()
+
+# Loop to join - Binomial
 for(i in 1:nrow(import_data_taxa)){
+  # Join
+  import_data_taxa[Binomial == corr_taxa$input_names[i],
+              `:=` (class = corr_taxa$class[i],
+                    order = corr_taxa$order[i],
+                    family = corr_taxa$family[i],
+                    Binomial = corr_taxa$Binomial[i],
+                    submitted_name = corr_taxa$input_names[i])]
   print(i)
-  if(import_data_taxa$class[i] %chin% c("Teleostei", "Cladistia")){
-    import_data_taxa$group[i] <- "Bony fishes"
-  } else if(import_data_taxa$class[i] %chin% c("Elasmobranchii", "Amphibia")){
-    import_data_taxa$group[i] <- "Other vertebrates"
-  } else if(import_data_taxa$order[i] %chin% "Scleractinia" &&
-            !is.na(import_data_taxa$family[i])){
-    import_data_taxa$group[i] <- "Stony corals"
-  } else if(!is.na(import_data_taxa$class[i])){
-    import_data_taxa$group[i] <- "Other invertebrates"
-  } else {
-    import_data_taxa$group[i] <- NA
-  }
-};beep()
+}
 
-# Bony fishes
-import_data_taxa[class %in% c("Teleostei", "Cladistia"), group := "Bony fishes"]
+# correct Holocathus --> Holacanthus
+import_data_taxa$Binomial <- gsub("Holocanthus", "Holacanthus", import_data_taxa$Binomial)
 
-# Other vertebrates
-import_data_taxa[class %in% c("Elasmobranchii", "Amphibia"), group := "Other vertebrates"]
+# correct Valencienna --> Valenciennea
+import_data_taxa$Binomial <- gsub("Valencienna", "Valenciennea", import_data_taxa$Binomial)
 
-# Stony corals
-import_data_taxa[order == "Scleractinia", group := "Stony corals"]
+# correct Ricordia --> Ricordea
+import_data_taxa$Binomial <- gsub("Ricordia", "Ricordea", import_data_taxa$Binomial)
 
-# Stony corals
-import_data_taxa[is.na(group) & !is.na(class), group := "Other invertebrates"]
+## By family ===================================================================
+
+# Do quick check of taxa
+fam_check <- import_data_taxa[, .(family, order, class)] %>% unique()
+
+# Correct Apogonidae
+import_data_taxa[family == "Apogonidae", order := "Kurtiformes"]
+
+# Correct Pseudochromidae
+import_data_taxa[family == "Pseudochromidae", order := "Ovalentaria incertae sedis"]
+
+# Correct Zanclidae
+import_data_taxa[family == "Zanclidae", order := "Acanthuriformes"]
+
+# Correct Callionymidae
+import_data_taxa[family == "Callionymidae", order := "Callionymiformes"]
+
+# Correct Cerianthidae
+import_data_taxa[family == "Cerianthidae", order := "Ceriantharia"]
+import_data_taxa[order == "Ceriantharia", class := "Hexacorallia"]
+
+# Correct Cirrhitidae
+import_data_taxa[family == "Cirrhitidae", order := "Centrarchiformes"]
+
+# Correct Ephippidae
+import_data_taxa[family == "Ephippidae", order := "Acanthuriformes"]
+
+# Correct Holocentridae
+import_data_taxa[family == "Holocentridae", order := "Holocentriformes"]
+
+# Correct Pomacanthidae
+import_data_taxa[family == "Pomacanthidae", order := "Acanthuriformes"]
+
+# Correct Scleralcyonacea
+import_data_taxa[order == "Scleralcyonacea", class := "Octocorallia"]
+
+# Correct Chromodorididae
+import_data_taxa[family == "Chromodorididae", order := "Doridida"]
+
+# Correct Scleractinia
+import_data_taxa[order == "Scleractinia", class := "Hexacorallia"]
+
+# Correct Lutjanidae
+import_data_taxa[family == "Lutjanidae", class := "Eupercaria incertae sedis"]
+
+# Correct Scaridae
+import_data_taxa[family == "Scaridae", order := "Eupercaria incertae sedis"]
+import_data_taxa[family == "Scaridae", family := "Labridae"]
+
+# Correct genus and species
+import_data_taxa <- separate(import_data_taxa,
+                             col = Binomial,
+                             into = c("Genus", "Species"),
+                             sep = " ",
+                             remove = FALSE)
 
 # Save -------------------------------------------------------------------------
 

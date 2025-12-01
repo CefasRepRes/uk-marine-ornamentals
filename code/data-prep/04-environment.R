@@ -7,7 +7,6 @@ library(readr) # Better file reading
 library(data.table) # Better data wrangling
 library(dplyr) # Use if you have to
 library(tidyr) # Column separation
-library(progress) # Progress bar
 library(beepr) # Beep when complete
 # Environment package
 library(worrms)
@@ -19,7 +18,6 @@ options(scipen = 9999)
 
 import_data <- data.table::fread(here::here("data",
                                             "modified-data",
-                                            "invoice-data",
                                             "03-import-data-taxa-manual.csv"))
 
 import_data <- import_data[!is.na(class) &
@@ -30,8 +28,6 @@ get_listings <- import_data[, c("Binomial", "Genus", "family", "order", "class")
 
 # Correct the environment ------------------------------------------------------
 
-# Create progress bar
-pb <- progress_bar$new(total = nrow(get_listings))
 environment <- data.frame()
 for(i in 1:nrow(get_listings)){
   # Start with binomial
@@ -55,7 +51,6 @@ for(i in 1:nrow(get_listings)){
     env <- env[1, ] # Get first entry only
     environment <- rbind(environment, env)
   }
-  pb$tick()
   print(i)
 };beep()
 
@@ -153,16 +148,15 @@ for(i in 1:nrow(environment_results)){
 # All
 data.table::fwrite(import_data_env, here::here("data",
                                                "modified-data",
-                                               "invoice-data",
                                                "04-import-data-env.csv"),
-                   row.names = F,
+                   row.names = FALSE,
                    na = NA)
 
 # Marine
 import_data_marine <- import_data_env[Environment == "Marine"]
+
 data.table::fwrite(import_data_marine, here::here("data",
                                                   "modified-data",
-                                                  "invoice-data",
                                                   "04a-import-data-marine.csv"),
-                   row.names = F,
+                   row.names = FALSE,
                    na = NA)
