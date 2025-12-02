@@ -1,10 +1,23 @@
-# UK marine ornamental imports
+# UK marine ornamental imports 🐟 🪸
 
 Author(s): [Sarah Alewijnse](https://github.com/sarah-alewijnse)
 
 This repository contains the code used to clean and analyse data on the import of marine ornamental species into the United Kingdom.
 
-Please note: some sensitive information in the code has been redacted for this public version.
+**Please note:** some sensitive information in the code has been redacted for this public version.
+
+## Data
+
+For completeness, some data files are provided. These are:
+
+* `data/modified-data/missing-taxa-identified.csv` - taxa which have been manually identified according to the [WoRMS](https://www.marinespecies.org/index.php) taxonomy.
+* `data/modified-data/corrected-taxa.csv` - misspelled taxa which have been corrected using the [WoRMS](https://www.marinespecies.org/index.php) taxonomy.
+
+You will also need:
+
+* A list of CITES listed taxa, available for download [here](https://checklist.cites.org/#/en).
+* An API token for the IUCN Red List, available [here](https://api.iucnredlist.org/users/sign_up).
+  - This token should be placed in a file called `.Renviron`.
 
 ## Session Information
 
