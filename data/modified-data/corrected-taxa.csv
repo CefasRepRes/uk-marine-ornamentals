@@ -1,0 +1,56 @@
+input_names,Binomial,class,order,family
+Abudefduf sexatilis,Abudefduf saxatilis,Teleostei,Ovalentaria incertae sedis,Pomacentridae
+Balistoides conspicillium,Balistoides conspicillum,Teleostei,Tetraodontiformes,Balistidae
+Chaetodon melanotus,Chaetodon melannotus,Teleostei,Acanthuriformes,Chaetodontidae
+Anampses meleagris,Anampses meleagrides,Teleostei,Eupercaria incertae sedis,Labridae
+Centropyge multispinus,Centropyge multispinis,Teleostei,Acanthuriformes,Pomacanthidae
+Centropyge vrolicki,Centropyge vrolikii,Teleostei,Acanthuriformes,Pomacanthidae
+Chaetoderma penicilligera,Chaetodermis penicilligerus,Teleostei,Tetraodontiformes,Monacanthidae
+Coris gaimardi,Coris gaimard,Teleostei,Eupercaria incertae sedis,Labridae
+Coris gaimard africana,Coris gaimard,Teleostei,Eupercaria incertae sedis,Labridae
+Dactylopterus orientalis,Dactyloptena orientalis,Teleostei,Dactylopteriformes,Dactylopteridae
+Dactyloptena orientalis,Dactyloptena orientalis,Teleostei,Dactylopteriformes,Dactylopteridae
+Diodon holacanthus,Diodon holocanthus,Teleostei,Tetraodontiformes,Diodontidae
+Ecsenius bicolour,Ecsenius bicolor,Teleostei,Blenniiformes,Blenniidae
+Engina mendicaria,Engina mendicaria,Gastropoda,Neogastropoda,Pisaniidae
+Entacmaea quadricolour,Entacmaea quadricolor,Hexacorallia,Actiniaria,Actiniidae
+Exalias brevis,Exallias brevis,Teleostei,Blenniiformes,Blenniidae
+Genicanthus lamarcki,Genicanthus lamarck,Teleostei,Acanthuriformes,Pomacanthidae
+Genicanthus lamark,Genicanthus lamarck,Teleostei,Acanthuriformes,Pomacanthidae
+Genicanthus melanospilus,Genicanthus melanospilos,Teleostei,Acanthuriformes,Pomacanthidae
+Gomphosus coeruleus,Gomphosus caeruleus,Teleostei,Eupercaria incertae sedis,Labridae
+Hoplolatilus luteus,Hoplolatilus luteus,Teleostei,Eupercaria incertae sedis,Malacanthidae
+Istiblennius chysospilos,Blenniella chrysospilos,Teleostei,Blenniiformes,Blenniidae
+Istiblennius chrysospilos,Blenniella chrysospilos,Teleostei,Blenniiformes,Blenniidae
+Labroides dimidatus,Labroides dimidiatus,Teleostei,Eupercaria incertae sedis,Labridae
+Naso literatus,Naso lituratus,Teleostei,Acanthuriformes,Acanthuridae
+Neoglyphidodon oxydon,Neoglyphidodon oxyodon,Teleostei,Ovalentaria incertae sedis,Pomacentridae
+Novaculichthys taeniorus,Novaculichthys taeniourus,Teleostei,Eupercaria incertae sedis,Labridae
+Novaculichthys taeniurus,Novaculichthys taeniourus,Teleostei,Eupercaria incertae sedis,Labridae
+Novaculichtys taeniorus,Novaculichthys taeniourus,Teleostei,Eupercaria incertae sedis,Labridae
+Oxycirrhitus typus,Oxycirrhites typus,Teleostei,Centrarchiformes,Cirrhitidae
+Oxycirrhites typus,Oxycirrhites typus,Teleostei,Centrarchiformes,Cirrhitidae
+Oxymonocanthus longirostris,Oxymonacanthus longirostris,Teleostei,Tetraodontiformes,Monacanthidae
+Pictichromis paccagnellae,Pictichromis paccagnellorum,Teleostei,Ovalentaria incertae sedis,Pseudochromidae
+Pictichromis paccagnellorum,Pictichromis paccagnellorum,Teleostei,Ovalentaria incertae sedis,Pseudochromidae
+Platax tiera,Platax teira,Teleostei,Acanthuriformes,Ephippidae
+Plectorhinchus picus,Diagramma pictum,Teleostei,Eupercaria incertae sedis,Haemulidae
+Plectorhinchus pictus,Diagramma pictum,Teleostei,Eupercaria incertae sedis,Haemulidae
+Pseudanthias evansi,Pseudanthias evansi,Teleostei,Perciformes,Anthiadidae
+Pseudanthias squamipinnis,Pseudanthias squamipinnis,Teleostei,Perciformes,Anthiadidae
+Pseudocheilinus hexataenis,Pseudocheilinus hexataenia,Teleostei,Eupercaria incertae sedis,Labridae
+Pseudochromis flaviviertex,Pseudochromis flavivertex,Teleostei,Eupercaria incertae sedis,Labridae
+Taeniura lymna,Taeniura lymma,Elasmobranchii,Myliobatiformes,Dasyatidae
+Tetrasomus gibbosus,Tetrosomus gibbosus,Teleostei,Tetraodontiformes,Ostraciidae
+Zebrasoma scopes,Zebrasoma scopas,Teleostei,Acanthuriformes,Acanthuridae
+Doryhamphus excises,Doryrhamphus excisus,Teleostei,Syngnathiformes,Syngnathidae
+Microspathodon chrysurus,Microspathodon chrysurus,Teleostei,Ovalentaria incertae sedis,Pomacentridae
+Plagiotremus rhynorhyncus,Plagiotremus rhinorhynchos,Teleostei,Blenniiformes,Blenniidae
+Wetmorella nigropunctata,Wetmorella nigropinnata,Teleostei,Eupercaria incertae sedis,Labridae
+Anthias squammipinnis,Pseudanthias squamipinnis,Teleostei,Perciformes,Anthiadidae
+Urolophus jamaicensis,Urobatis jamaicensis,Elasmobranchii,Myliobatiformes,Urotrygonidae
+Zanclus cornatus,Zanclus cornutus,Teleostei,Acanthuriformes,Zanclidae
+Taeniatus triacanthus,Taenianotus triacanthus,Teleostei,Perciformes,Scorpaenidae
+Scorpaena parvipinnis,Scorpaenodes parvipinnis,Teleostei,Perciformes,Scorpaenidae
+Zanclus canescens,Zanclus cornutus,Teleostei,Acanthuriformes,Zanclidae
+Bodianus anthoides,Bodianus anthioides,Teleostei,Eupercaria incertae sedis,Labridae
