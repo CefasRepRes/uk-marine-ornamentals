@@ -42,6 +42,8 @@ found_missing_taxa <- rbind(found_taxa,
                             use.names = FALSE)
 
 # Write into file
+# You will overwrite and append
+# This is by design so you only have to find the taxa at the bottom of the file
 write.csv(found_missing_taxa, here::here("data",
                                          "modified-data",
                                          "missing-taxa-identified.csv"),
