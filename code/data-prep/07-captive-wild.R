@@ -36,7 +36,7 @@ new_listings <- anti_join(get_listings, retrieved_listings, by = c("canonicalNam
 # robis 
 countries <- data.frame()
 # Loop over
-for(i in 223:nrow(new_listings)){
+for(i in 1:nrow(new_listings)){
   # Get range if not already retrieved
   # This step saves time for taxa with a lot of records
   if(!(new_listings$canonicalName[i] %in% countries$scientificName) |
@@ -74,7 +74,8 @@ data.table::fwrite(get_listings, here::here("data",
                    row.names = FALSE,
                    na = NA)
 
-
+# correct NA (text) to actual NA
+import_data[Wild_Bred == "NA", Wild_Bred := NA]
 
 # Combine with existing data
 get_listings_captive <- data.table::merge.data.table(import_data,
