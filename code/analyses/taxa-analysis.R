@@ -22,8 +22,7 @@ options(scipen = 9999)
 
 import_data <- data.table::fread(here::here("data",
                                             "modified-data",
-                                            "invoice-data",
-                                            "07-import-data-final.csv"))
+                                            "import-data-final.csv"))
 import_data <- data.table(import_data)
 
 # Numbers ----------------------------------------------------------------------
@@ -99,10 +98,11 @@ group_tally <- num.val.spp.tally(data = import_data,
                                  grouping = "Group")
 
 # plot
-group_palette <- c("#66CCEE",
-                   "#4477BB",
+group_palette <- c("#EE6677",
+                   "#66CCEE",
+                   "#CCBB44",
                    "#228833",
-                   "#CCBB44")
+                   "#4477BB") # TODO: update
 names(group_palette) <- unique(group_tally$Group)
 
 group_number <- ggplot(data = group_tally, aes(x = reorder(Group, Number), y = Number/1000, fill = Group)) +
@@ -168,7 +168,6 @@ threatened_taxa <- import_data[IUCN_listing %chin% c("EN", "CR", "VU")][, c("Bin
                                                                             "Order",
                                                                             "Class",
                                                                             "IUCN_listing",
-                                                                            "Population_trend",
                                                                             "CITES_listing")][order(IUCN_listing)] %>%
   unique()
 threatened_taxa <- merge(threatened_taxa,
@@ -271,10 +270,10 @@ marine_verts_species <- num.val.spp.tally(data = import_data[Group == "Other ver
                                                        "Class"))
 
 # Create palette
-verts_fam_palette <- c("#999933",
-                       "#DDCC77",
-                       "#CC6677",
-                       "#882255")
+verts_fam_palette <- c("#332288",
+                       "#0077BB",
+                       "#88CCEE",
+                       "#44AA99")
 
 names(verts_fam_palette) <- unique(marine_verts_families$Family)
 
@@ -323,8 +322,8 @@ marine_corals_species <- num.val.spp.tally(data = import_data[Group == "Stony co
                                                         "Class"))
 
 # Add in unidentified
-marine_corals_families[Family == "", Family := "Unidentified"]
-marine_corals_species[Family == "", Family := "Unidentified"]
+marine_corals_families[is.na(Family), Family := "Unidentified"]
+marine_corals_species[is.na(Family), Family := "Unidentified"]
 
 # Top 10 by number
 marine_corals_families_number <- head(marine_corals_families[order(-Number)], n = 10)
@@ -449,3 +448,65 @@ png(filename = here::here("outputs", "plots", "marine_inverts_orders.png"),
     width = 8, height = 4, res = 400, units = "in")
 print(inverts)
 dev.off()
+
+## Algae =======================================================================
+
+algae_orders <- num.val.spp.tally(data = import_data[Group == "Algae"],
+                                  grouping = c("Order",
+                                               "Class"))
+
+algae_families <- num.val.spp.tally(data = import_data[Group == "Algae"],
+                                    grouping = c("Family",
+                                                 "Order",
+                                                 "Class"))
+
+algae_species <- num.val.spp.tally(data = import_data[Group == "Algae"],
+                                   grouping = c("Binomial",
+                                                "Family",
+                                                "Order",
+                                                "Class"))
+
+# Create palette
+algae_family_palette <- c( "#33BBEE",
+                           "#DDCC77",
+                           "#88CCEE",
+                           "#44AA99",
+                           "#117733",
+                           "#999933")
+
+names(algae_family_palette) <- unique(algae_species$Family)
+
+algae_number <- ggplot(algae_families,
+                         aes(x = reorder(Family, Number), y = Number, fill = Family)) +
+  geom_col() +
+  coord_flip() +
+  xlab("Family\n") +
+  ylab("\nNumber of individuals") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_manual(values = algae_family_palette) +
+  theme_bw() +
+  labs(tag = "A")
+
+# Top 10 by value
+algae_value <- algae_families[order(-Value_USD)]
+
+algae_value <- ggplot(algae_value,
+                        aes(x = reorder(Family, Value_USD), y = Value_USD, fill = Family)) +
+  geom_col() +
+  coord_flip() +
+  xlab("") +
+  ylab("\n Total value of imports ($ USD)") +
+  scale_y_continuous(labels = scales::comma) +
+  scale_fill_manual(values = algae_family_palette) +
+  theme_bw() +
+  labs(tag = "B")
+
+algae <- algae_number + algae_value & theme(legend.position = "none")
+algae
+
+# save
+png(filename = here::here("outputs", "plots", "marine_algae_families.png"),
+    width = 8, height = 4, res = 400, units = "in")
+print(algae)
+dev.off()
+
