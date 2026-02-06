@@ -10,6 +10,9 @@
 # Ignore plots
 *.png
 
+# Ignore archive
+/archive/
+
 # Do not ignore some data files
 !/data/modified-data/missing-taxa-identified.csv
 !/data/modified-data/corrected-taxa.csv
