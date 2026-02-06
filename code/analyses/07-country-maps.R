@@ -3,11 +3,8 @@
 # Load required packages -------------------------------------------------------
 
 library(here) # Easy filepaths
-library(readr) # Better file reading
 library(data.table) # Better data wrangling
-library(dplyr) # Use if you have to
-library(tidyr) # Column separation
-library(stringr) # String handling
+library(magrittr) # Pipes %>%
 library(ggplot2) # Plotting
 # Maps
 library(geosphere)
@@ -19,29 +16,38 @@ library(labdsv)
 # Get rid of scientific notation
 options(scipen = 9999)
 
-# Run tables code --------------------------------------------------------------
+# source functions
+source(here::here("functions", "numValSppTally.R"))
+source(here::here("functions", "connectionMap.R"))
 
-source(here::here("code", "analyses", "taxa-analysis.R"))
+# Load data --------------------------------------------------------------------
 
-# Plot -------------------------------------------------------------------------
+import_data <- data.table::fread(here::here("data",
+                                            "modified-data",
+                                            "import-data-final.csv"))
+import_data <- data.table(import_data)
 
-# Aggregate by group
-country_group <- num.val.spp.tally(import_data, grouping = c("Origin_country", "Group"))
+# Data prep --------------------------------------------------------------------
 
-# Countries
+# aggregate by country and taxonomic group
+country_group <- numValSppTally(import_data, 
+                                grouping = c("Origin_country", "Group"))
+
+# get a list of countries
 countries <- as.data.frame(unique(country_group$Origin_country))
 colnames(countries) <- "countries"
 
-# Load centroids
+# load centroids
+# from https://github.com/gavinr/world-countries-centroids
 centroids <- data.table::fread(here::here("data",
                                           "original-data",
                                           "country-centroids.csv"))
 
-# Join
+# join to data
 countries <- merge.data.table(countries, centroids[, 1:3], by.x = "countries",
                               by.y = "COUNTRY", all.x = TRUE) %>% data.table()
 
-# Fill in Taiwan and USA
+# fill in Taiwan and USA
 countries[countries == "USA",
           `:=` (latitude = centroids[COUNTRY == "United States", latitude],
                 longitude = centroids[COUNTRY == "United States", longitude])]
@@ -49,8 +55,10 @@ countries[countries == "Taiwan",
           `:=` (latitude = 23.9738611,
                 longitude = 120.982)]
 
+# extract United Kingdom
 gbr <- centroids[COUNTRY == "United Kingdom"]
 
+# create paths
 path <- data.frame()
 for(i in 1:nrow(countries)){
   inter <- geosphere::gcIntermediate(countries[i, c(longitude, latitude)],
@@ -73,49 +81,7 @@ for(i in 1:nrow(countries)){
 }
 path <- data.table(path)
 
-# World map
-world <- map_data("world")
-
-# Create function
-connectionMap <- function(group, colour, tags){
-  # extract data 
-  map_data <- country_group[Group == group, c("Origin_country", "Number", "Value_USD")]
-  
-  # extract points
-  map_points <- merge.data.table(map_data, countries, by.x = "Origin_country",
-                                 by.y = "countries")
-  # extract path
-  map_path <- merge.data.table(map_data, path, by = "Origin_country")
-  
-  # create map by number
-  map_number <- ggplot() +
-    geom_polygon(data = world, aes(x = long, y = lat, group = group),
-                 fill = "#DDDDDD", col = "white") +
-    geom_path(data = map_path, aes(x = lon, y = lat, group = country, linewidth = Number),
-              alpha = 0.5, col = colour) +
-    geom_point(data = map_points, aes(x = longitude, y = latitude,
-                                      size = Number), col = colour) +
-    scale_size(labels = scales::comma) +
-    scale_linewidth(labels = scales::comma) +
-    theme_void() +
-    labs(tag = tags[1])
-  theme(legend.position = "bottom")
-  
-  map_value <- ggplot() +
-    geom_polygon(data = world, aes(x = long, y = lat, group = group),
-                 fill = "#DDDDDD", col = "white") +
-    geom_path(data = map_path, aes(x = lon, y = lat, group = country, linewidth = Value_USD),
-              alpha = 0.5, col = colour) +
-    geom_point(data = map_points, aes(x = longitude, y = latitude,
-                                      size = Value_USD), col = colour) +
-    scale_size(name = "Value ($ USD)", labels = scales::comma) +
-    scale_linewidth(name = "Value ($ USD)", labels = scales::comma) +
-    theme_void() +
-    labs(tag = tags[2])
-  theme(legend.position = "bottom")
-  
-  return(map_number + map_value)
-}
+# Plots ------------------------------------------------------------------------
 
 # fish
 fish_map <- connectionMap(group = "Bony fishes", colour = "#66CCEE", tags = c("A", "B"))
