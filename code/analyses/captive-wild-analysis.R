@@ -87,6 +87,11 @@ inverts_captive <- num.val.spp.tally(import_data[Group == "Other invertebrates"]
 corals_captive <- num.val.spp.tally(import_data[Group == "Stony corals"],
                                     "Captive_wild")
 
+# Algae
+algae_captive <- num.val.spp.tally(import_data[Group == "Algae"],
+                                    "Captive_wild")
+
+
 # Threatened species only
 threatened_captive <- num.val.spp.tally(import_data[IUCN_listing %chin% c("EN", "VU", "CR")],
                                         "Captive_wild")
@@ -99,10 +104,6 @@ cites_captive <- num.val.spp.tally(import_data[!is.na(CITES_listing) &
 # All taxa
 captive_overall <- num.val.spp.tally(import_data,
                                      "Captive_wild")
-
-# Population trend
-population_trend_tally <- num.val.spp.tally(import_data,
-                                            "Population_trend")
 
 # Plot -------------------------------------------------------------------------
 
@@ -159,7 +160,8 @@ fish_donut <- donutPlot(fish_captive, "Bony fishes")
 verts_donut <- donutPlot(verts_captive, "Other vertebrates")
 corals_donut <- donutPlot(corals_captive, "Stony corals")
 inverts_donut <- donutPlot(inverts_captive, "Other invertebrates")
-groups_donut <- fish_donut | verts_donut | corals_donut | inverts_donut
+algae_donut <- donutPlot(algae_captive, "Algae")
+groups_donut <- fish_donut | verts_donut | corals_donut | inverts_donut | algae_donut
 groups_donut
 
 # Save
@@ -186,7 +188,8 @@ dev.off()
 
 # Plot overall
 overall_donut <- donutPlot(captive_overall, "Overall")
-overall_donut <- overall_donut & theme(legend.position = "right")
+overall_donut <- cites_donut | iucn_donut | overall_donut
+overall_donut <- overall_donut & theme(legend.position = "bottom")
 overall_donut
 
 # Save

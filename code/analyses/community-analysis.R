@@ -56,7 +56,7 @@ spec_accum_plot <- ggplot(species_records_accum_df, aes(x = records,
   xlab("\nNumber of records") +
   ylab("Species richness\n") +
   scale_x_continuous(breaks = seq(0, 300, 50)) +
-  scale_y_continuous(breaks = seq(0, 1200, 200)) +
+  scale_y_continuous(breaks = seq(0, 1400, 200)) +
   theme_bw() +
   theme(text = element_text(size = 15))
 spec_accum_plot
@@ -115,3 +115,4 @@ country_fish <- num.val.spp.tally(import_data[Group == "Bony fishes"], grouping 
 country_verts <- num.val.spp.tally(import_data[Group == "Other vertebrates"], grouping = c("Origin_country"))
 country_corals <- num.val.spp.tally(import_data[Group == "Stony corals"], grouping = c("Origin_country"))
 country_inverts <- num.val.spp.tally(import_data[Group == "Other invertebrates"], grouping = c("Origin_country"))
+country_algae <- num.val.spp.tally(import_data[Group == "Algae"], grouping = c("Origin_country"))

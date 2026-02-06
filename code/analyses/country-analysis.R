@@ -118,7 +118,7 @@ connectionMap <- function(group, colour, tags){
 }
 
 # fish
-fish_map <- connectionMap(group = "Bony fishes", colour = "#4477BB", tags = c("A", "B"))
+fish_map <- connectionMap(group = "Bony fishes", colour = "#66CCEE", tags = c("A", "B"))
 fish_map
 png(filename = here::here("outputs", "plots", "fish_map.png"),
     width = 8, height = 3, res = 400, units = "in")
@@ -126,7 +126,7 @@ print(fish_map)
 dev.off()
 
 # verts
-verts_map <- connectionMap(group = "Other vertebrates", colour = "#CCBB44", tags = c("C", "D"))
+verts_map <- connectionMap(group = "Other vertebrates", colour = "#4477BB", tags = c("C", "D"))
 verts_map
 png(filename = here::here("outputs", "plots", "verts_map.png"),
     width = 8, height = 3, res = 400, units = "in")
@@ -134,17 +134,25 @@ print(verts_map)
 dev.off()
 
 # stony corals
-corals_map <- connectionMap(group = "Stony corals", colour = "#228833", tags = c("E", "F"))
+corals_map <- connectionMap(group = "Stony corals", colour = "#CCBB44", tags = c("E", "F"))
 corals_map
 png(filename = here::here("outputs", "plots", "corals_map.png"),
     width = 8, height = 3, res = 400, units = "in")
 print(corals_map)
 dev.off()
 
-# stony corals
-inverts_map <- connectionMap(group = "Other invertebrates", colour = "#66CCEE", tags = c("G", "H"))
+# inverts
+inverts_map <- connectionMap(group = "Other invertebrates", colour = "#EE6677", tags = c("G", "H"))
 inverts_map
 png(filename = here::here("outputs", "plots", "inverts_map.png"),
     width = 8, height = 3, res = 400, units = "in")
 print(inverts_map)
+dev.off()
+
+# algae
+algae_map <- connectionMap(group = "Other invertebrates", colour = "#228833", tags = c("I", "J"))
+algae_map
+png(filename = here::here("outputs", "plots", "algae_map.png"),
+    width = 8, height = 3, res = 400, units = "in")
+print(algae_map)
 dev.off()
