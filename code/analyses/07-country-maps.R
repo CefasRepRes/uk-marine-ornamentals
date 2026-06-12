@@ -116,7 +116,7 @@ print(inverts_map)
 dev.off()
 
 # algae
-algae_map <- connectionMap(group = "Other invertebrates", colour = "#228833", tags = c("I", "J"))
+algae_map <- connectionMap(group = "Algae", colour = "#228833", tags = c("I", "J"))
 algae_map
 png(filename = here::here("outputs", "plots", "algae_map.png"),
     width = 8, height = 3, res = 400, units = "in")
