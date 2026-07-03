@@ -117,3 +117,23 @@ png(filename = here::here("outputs", "plots", "taxa_groups.png"),
     width = 8, height = 10, res = 400, units = "in")
 print(group_plot)
 dev.off()
+
+# Plot volume vs species ------
+
+# plot
+vol_plot <- ggplot(spp_tally, aes(x = Consignments, fill = Group)) +
+  geom_histogram(binwidth = 1) +
+  scale_fill_manual(values = group_palette) +
+  xlab("Number of consignments") +
+  ylab("Number of species") +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  theme_bw()
+
+vol_plot
+
+# save
+png(filename = here::here("outputs", "plots", "volume_plot.png"),
+    width = 8, height = 6, res = 400, units = "in")
+print(vol_plot)
+dev.off()
