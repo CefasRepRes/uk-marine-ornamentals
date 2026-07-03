@@ -23,6 +23,7 @@ import_data <- data.table(import_data)
 
 # subset to coral
 coral_dat <- import_data[Group == "Stony corals"]
+coral_dat[is.na(Family), Family := "NA"]
 
 # Tallies -----------------------------------------------------------------------
 
@@ -56,7 +57,7 @@ coral_species_value <- head(coral_species[order(-Value_USD)], n = 10)
 # Plots ------------------------------------------------------------------------
 
 # create palette
-coral_fam_palette <- c("#332288",
+coral_fam_palette <- c("#705cd6",
                        "#BBBBBB",
                        "#0077BB",
                        "#88CCEE",
@@ -76,7 +77,7 @@ stony_corals_number <- ggplot(coral_families_number,
   geom_col() +
   coord_flip() +
   xlab("Family\n") +
-  ylab("\nNumber of individuals") +
+  ylab("\nNumber of units") +
   scale_y_continuous(labels = scales::comma) +
   scale_fill_manual(values = coral_fam_palette) +
   theme_bw() +
@@ -103,3 +104,9 @@ png(filename = here::here("outputs", "plots", "stony_corals_families.png"),
     width = 8, height = 4, res = 400, units = "in")
 print(stony_corals_plot)
 dev.off()
+
+# Source -----
+
+coral_farm <- coral_dat[Origin_country %in% c("Indonesia", "Australia", "Micronesia")]
+coral_farm <- numValSppTally(coral_farm, grouping = c("Captive_wild", "Origin_country"))
+coral_farm

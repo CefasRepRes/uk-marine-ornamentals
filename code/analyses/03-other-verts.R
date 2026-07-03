@@ -40,7 +40,7 @@ verts_species <- numValSppTally(data = verts_dat, grouping = c("Binomial",
 # Plots ------------------------------------------------------------------------
 
 # create palette
-verts_fam_palette <- c("#332288",
+verts_fam_palette <- c("#705cd6",
                        "#0077BB",
                        "#88CCEE",
                        "#44AA99")

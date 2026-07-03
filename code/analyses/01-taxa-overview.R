@@ -103,7 +103,7 @@ group_spp <- ggplot(data = group_tally,
   xlab("") +
   ylab("\nNumber of species imported") +
   scale_y_continuous(labels = scales::comma,
-                     breaks = seq(0, 750, 250)) +
+                     breaks = seq(0, 1000, 250)) +
   scale_fill_manual(values = group_palette) +
   coord_flip() +
   theme_bw() +

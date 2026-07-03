@@ -56,7 +56,7 @@ algae_number <- ggplot(algae_families,
   geom_col() +
   coord_flip() +
   xlab("Family\n") +
-  ylab("\nNumber of individuals") +
+  ylab("\nNumber of units") +
   scale_y_continuous(labels = scales::comma) +
   scale_fill_manual(values = algae_family_palette) +
   theme_bw() +

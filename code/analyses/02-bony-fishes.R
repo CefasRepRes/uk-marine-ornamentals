@@ -56,7 +56,7 @@ fish_species_value <- head(fish_species[order(-Value_USD)], n = 10)
 # Plot -------------------------------------------------------------------------
 
 # create palette
-fish_fam_palette <- c("#332288",
+fish_fam_palette <- c("#705cd6",
                       "#0077BB",
                       "#88CCEE",
                       "#44AA99",

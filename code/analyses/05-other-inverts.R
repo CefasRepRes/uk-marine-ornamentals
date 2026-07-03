@@ -55,7 +55,7 @@ inverts_species_value <- head(inverts_species[order(-Value_USD)], n = 10)
 # Plots ------------------------------------------------------------------------
 
 # Create palette
-inverts_order_palette <- c("#332288",
+inverts_order_palette <- c("#705cd6",
                            "#0077BB",
                            "#33BBEE",
                            "#88CCEE",
