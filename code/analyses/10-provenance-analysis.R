@@ -114,3 +114,34 @@ png(filename = here::here("outputs", "plots", "overall_donut.png"),
     width = 8, height = 6, res = 400, units = "in")
 print(overall_donut)
 dev.off()
+
+# Examples of farmed declarations -----
+
+## farmed corals =====
+
+# species
+farmed_corals_spp <- numValSppTally(import_data[Captive_wild == "farmed_declared" &
+                                              Group == "Stony corals"],
+                                c("Binomial"))
+# origin
+farmed_corals_origin <- numValSppTally(import_data[Captive_wild == "farmed_declared" &
+                                                  Group == "Stony corals"],
+                                    c("Origin_country"))
+
+## wild fish =====
+
+# species
+wild_fish_spp <- numValSppTally(import_data[Captive_wild == "wild_declared" &
+                                                  Group == "Bony fishes"],
+                                    c("Binomial"))
+# origin
+wild_fish_origin <- numValSppTally(import_data[Captive_wild == "wild_declared" &
+                                                     Group == "Bony fishes"],
+                                       c("Origin_country"))
+
+## likely farmed inverts =====
+
+# species 
+farmed_inverts_spp <- numValSppTally(import_data[Captive_wild == "farmed_likely" &
+                                                  Group == "Other invertebrates"],
+                                    c("Binomial", "Order", "Origin_country"))

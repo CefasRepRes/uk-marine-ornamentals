@@ -79,3 +79,43 @@ country_verts <- numValSppTally(import_data[Group == "Other vertebrates"], group
 country_corals <- numValSppTally(import_data[Group == "Stony corals"], grouping = c("Origin_country"))
 country_inverts <- numValSppTally(import_data[Group == "Other invertebrates"], grouping = c("Origin_country"))
 country_algae <- numValSppTally(import_data[Group == "Algae"], grouping = c("Origin_country"))
+
+# Tally by top countries -------------------------------------------------------
+
+# create function to extract top species
+topSppCountry <- function(country){
+  country_dat <- import_data[Origin_country == country]
+  country_dat <- numValSppTally(country_dat, c("Binomial", "Group"))
+  top_spp <- head(country_dat, 1)
+  return(top_spp)
+}
+
+# loop over country list
+top_spp_country <- data.table()
+countries <- country_tally$Origin_country
+for(i in 1:length(countries)){
+  top <- topSppCountry(country = countries[i])
+  top$Origin_country <- countries[i]
+  top_spp_country <- rbind(top_spp_country, top)
+}
+
+# do by value
+# create function to extract top species
+topSppCountry <- function(country){
+  country_dat <- import_data[Origin_country == country]
+  country_dat <- numValSppTally(country_dat, c("Binomial", "Group"))
+  country_dat <- setorder(country_dat, -Value_USD)
+  top_spp <- head(country_dat, 1)
+  return(top_spp)
+}
+
+# loop over country list
+top_spp_country <- data.table()
+countries <- country_tally$Origin_country
+for(i in 1:length(countries)){
+  top <- topSppCountry(country = countries[i])
+  top$Origin_country <- countries[i]
+  top_spp_country <- rbind(top_spp_country, top)
+}
+
+
